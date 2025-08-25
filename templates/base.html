@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}QuizMaster{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-soft': 'bounce 2s ease-in-out infinite'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-white/80 backdrop-blur-lg shadow-xl border-b border-white/20 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-600 rounded-xl flex items-center justify-center transform hover:rotate-12 transition-all duration-300 shadow-lg">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <a href="" class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent hover:scale-105 transform transition-all duration-300">
+                        QuizMaster
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="" class="text-gray-700 hover:text-purple-600 px-4 py-2 font-medium transition-all duration-300 hover:bg-purple-50 rounded-xl relative group">
+                        <span class="relative z-10">Home</span>
+                        <div class="absolute inset-0 bg-purple-100 rounded-xl scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                    </a>
+                    <a href="" class="text-gray-700 hover:text-purple-600 px-4 py-2 font-medium transition-all duration-300 hover:bg-purple-50 rounded-xl relative group">
+                        <span class="relative z-10">Quizzes</span>
+                        <div class="absolute inset-0 bg-purple-100 rounded-xl scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                    </a>
+                    <a href="" class="text-gray-700 hover:text-purple-600 px-4 py-2 font-medium transition-all duration-300 hover:bg-purple-50 rounded-xl relative group">
+                        <span class="relative z-10">Leaderboard</span>
+                        <div class="absolute inset-0 bg-purple-100 rounded-xl scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                    </a>
+                </div>
+
+                <!-- Right Icons -->
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <div class="flex items-center space-x-3">
+                            <div class="text-sm text-gray-600">
+                                <span class="font-medium text-purple-600">{{ user.username }}</span>
+                                <div class="text-xs">Score: <span class="font-bold text-green-600">{{ user.score|default:0 }}</span></div>
+                            </div>
+                            <a href="" class="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </a>
+                            <a href="{% url 'authApp:Logout' %}" class="bg-red-500 text-white px-4 py-2 rounded-xl hover:bg-red-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl text-sm">Logout</a>
+                        </div>
+                    {% else %}
+                        <div class="flex items-center space-x-3">
+                            <a href="{% url 'authApp:Login' %}" class="text-gray-700 hover:text-purple-600 px-4 py-2 font-medium transition-all duration-300 hover:bg-purple-50 rounded-xl">Login</a>
+                            <a href="{% url 'authApp:SignUp' %}" class="bg-gradient-to-r from-purple-500 to-blue-600 text-white px-6 py-2 rounded-xl hover:from-purple-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">Sign Up</a>
+                        </div>
+                    {% endif %}
+                    <!-- Mobile menu button -->
+                    <button class="md:hidden p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-all duration-300" onclick="toggleMobileMenu()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="hidden md:hidden pb-4">
+                <div class="px-2 pt-2 pb-3 space-y-2 bg-white/90 rounded-2xl shadow-2xl mt-2 backdrop-blur-lg border border-white/20">
+                    <a href="" class="text-gray-700 hover:text-purple-600 block px-4 py-3 font-medium transition-all duration-300 hover:bg-purple-50 rounded-xl">Home</a>
+                    <a href="" class="text-gray-700 hover:text-purple-600 block px-4 py-3 font-medium transition-all duration-300 hover:bg-purple-50 rounded-xl">Quizzes</a>
+                    <a href="" class="text-gray-700 hover:text-purple-600 block px-4 py-3 font-medium transition-all duration-300 hover:bg-purple-50 rounded-xl">Leaderboard</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow main_container">
+        {% block content %}
+        <!-- Quiz content goes here -->
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/90 backdrop-blur-lg shadow-2xl border-t border-white/30 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 py-8">
+            <!-- Main Footer Content -->
+            <div class="flex flex-col lg:flex-row items-center justify-between space-y-6 lg:space-y-0">
+                
+                <!-- Brand Section -->
+                <div class="flex flex-col items-center lg:items-start space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-600 rounded-lg flex items-center justify-center shadow-lg">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">QuizMaster</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm text-center lg:text-left max-w-xs">Challenge your mind, expand your knowledge!</p>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="flex flex-wrap justify-center lg:justify-start items-center gap-6">
+                    <a href="" class="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors duration-300 hover:scale-105 transform">Browse Quizzes</a>
+                    <a href="" class="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors duration-300 hover:scale-105 transform">Leaderboard</a>
+                    <a href="#" class="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors duration-300 hover:scale-105 transform">How to Play</a>
+                    <a href="#" class="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors duration-300 hover:scale-105 transform">FAQ</a>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="flex flex-wrap justify-center gap-3 max-w-sm">
+                    <div class="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg px-3 py-2 shadow-md border border-white/50 flex-shrink-0">
+                        <div class="text-center">
+                            <div class="text-base font-bold text-purple-700 animate-pulse-slow">{{ total_quizzes|default:0 }}</div>
+                            <div class="text-xs text-gray-600">Quizzes</div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg px-3 py-2 shadow-md border border-white/50 flex-shrink-0">
+                        <div class="text-center">
+                            <div class="text-base font-bold text-blue-700 animate-bounce-soft">{{ active_users|default:0 }}</div>
+                            <div class="text-xs text-gray-600">Users</div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg px-3 py-2 shadow-md border border-white/50 flex-shrink-0">
+                        <div class="text-center">
+                            <div class="text-base font-bold text-green-700">{{ total_answers|default:0 }}+</div>
+                            <div class="text-xs text-gray-600">Answers</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="border-t border-gray-200 mt-6 pt-4 text-center">
+                <p class="text-gray-500 text-xs">© 2024 QuizMaster. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
+<!-- End of base.html -->
+<!-- This file serves as the base template for the QuizApp, providing a consistent layout with a navbar, main content area, and footer. It uses Tailwind CSS for styling and includes links to various sections of the app. The template is designed to be extended by other templates for specific pages like quizzes, results, and user profiles. -->
+<!-- The navbar includes links to the home page, quizzes, results, and user profile. The main content area is where specific page content will be injected using Django's template inheritance. The footer contains basic information and links to privacy, terms, and contact pages. -->
+<!-- The template uses Tailwind CSS for responsive design and styling, ensuring a modern and clean look. The sticky navbar remains at the top of the page on scroll, providing easy access to navigation links. The footer is designed to be simple and unobtrusive, maintaining a professional appearance. -->
+<!-- The template is structured to be easily maintainable and extendable, allowing for future enhancements and additional features without significant changes to the overall layout. It serves as a solid foundation for the QuizApp, ensuring a consistent user experience across different pages. -->
+<!-- This template is designed to be used with Django's template system, allowing for dynamic content rendering -->
