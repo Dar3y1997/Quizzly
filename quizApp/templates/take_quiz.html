@@ -3,21 +3,45 @@
 {% block title %}Take Quiz{% endblock title %}
 
 {% block content %}
-    <h2>{{ quiz.title }}</h2>
-    <form method="post">
+<div class="container mx-auto px-6 py-10 max-w-3xl">
+    <!-- Quiz Title -->
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">{{ quiz.title }}</h2>
+
+    <!-- Quiz Form -->
+    <form method="post" class="bg-white shadow-md rounded-2xl p-6 space-y-6">
         {% csrf_token %}
+
         {% for question in quiz.questions.all %}
-            <p>{{question.text}}</p>
-            {% for answer in question.answers.all %}
-                <label>
-                    <input type="radio" 
-                    name="{{ question.id }}" 
-                    value="{{ answer.id }}"
-                    >
-                    {{ answer.text }}
-                </label><br>
-            {% endfor %}
+            <div class="p-5 border border-gray-200 rounded-xl bg-gray-50">
+                <!-- Question -->
+                <p class="text-lg font-semibold text-gray-900 mb-4">
+                    {{ forloop.counter }}. {{ question.text }}
+                </p>
+
+                <!-- Answers -->
+                <div class="space-y-3">
+                    {% for answer in question.answers.all %}
+                        <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-100 p-2 rounded-lg transition">
+                            <input 
+                                type="radio" 
+                                name="{{ question.id }}" 
+                                value="{{ answer.id }}"
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                            >
+                            <span class="text-gray-700">{{ answer.text }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
         {% endfor %}
-        <button type="submit">Submit</button>
+
+        <!-- Submit Button -->
+        <div class="text-center">
+            <button type="submit" 
+                class="px-6 py-3 bg-blue-600 text-white font-medium rounded-xl shadow hover:bg-blue-700 transition">
+                Submit Quiz
+            </button>
+        </div>
     </form>
+</div>
 {% endblock %}
