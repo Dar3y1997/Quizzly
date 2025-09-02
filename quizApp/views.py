@@ -29,4 +29,9 @@ def quiz_result(request, quiz_id):
     attempt = UserAttempt.objects.filter(user=request.user, quiz=quiz).last()
     return render(request, 'quiz_result.html', {'quiz': quiz, 'score': attempt.score if attempt else None})
 
+@login_required
+def leaderboard(request):
+    leaderboard_data = UserAttempt.objects.select_related('user', 'quiz').order_by('-score', 'taken_at')
+    return render(request, 'leaderboard.html', {'leaderboard': leaderboard_data})
+
 
